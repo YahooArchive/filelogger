@@ -1,51 +1,35 @@
-/* filelogger v1.0
- * 
- * Copyright 2014 Yahoo! Inc. 
- * This file is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License (GPL), version 2 or later. This library is distributed WITHOUT ANY WARRANTY, whether express or implied. See the GNU GPL for more details (http://www.gnu.org/licenses/gpl.html)
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
+/*To do:
+ * get rid of the compile warnings
+ * save the headers, .o, and instructions into a project file
+ * ** bug: when a file is truncated, it does not capture the text
+ * or at least the first line that was written as part of the
+ * truncation, eg echo test > file. it also does not detect
+ * every truncation
  *
- * - Redistributions of source code must retain the above copyright notice, this
- *   list of conditions and the disclaimer that appears below.
- * - Redistributions of source code must also retain the original copyright notices
- *   from tail.c and logger.c as given below.
- * - Redistributions in binary form must reproduce the above copyright notice,
- *   along with the original copyright notices from tail.c and logger.c, this list of
- *   conditions and the following disclaimer in the documentation and/or other materials
- *   provided with the distribution.
- * - You may not use the name of Yahoo Inc. to endorse or promote products
- *   derived from this software without specific prior written permission.
- *
- *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *   ANY EXPRESS OR IMPLIED WARRANTIES,INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- *   IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- *   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- *   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- *   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- *   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *   THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- *  COPYRIGHT NOTICE FROM TAIL.C:
- *  Copyright (C) 1989-1991, 1995-2006, 2008-2011 Free Software Foundation, Inc.
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  
- *
- * COPYRIGHT NOTICE FROM LOGGER.C:
+/* mmmusic 10262013
+ * This combines logger.c from util-linux-2.20.1
+ * and tail.c from core-utils-8.9
+ * into a program that continuously tails one or 
+ * more files and logs each line to local or 
+ * remote syslog.
+ */
+
+/* tail: all original command-line options removed
+ * except q, v, and s. tail -F is assumed.
+ * stdin is not allowed. must specify a file
+ * by name.
+ */
+
+/* logger: an additional command line option 
+ * --add which allows additional text to be 
+ *  inserted at the beginning of the line before
+ *  sent to the syslog server. 
+ *  The previous hardcoded 400 character limit 
+ *  for the log message has been increased to 8096.
+ */
+
+
+/*
  * Copyright (c) 1983, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
@@ -76,39 +60,12 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- */
-
-
-/*To do:
- * get rid of the compile warnings
- * depending on how a file is truncated or rotated, it does not capture the text
- * or at least the first line that was written as part of the
- * truncation, eg echo test > file. it also does not detect
- * every truncation
  *
-/* This combines logger.c from util-linux-2.20.1
- * and tail.c from core-utils-8.9
- * into a program that continuously tails one or 
- * more files and logs each line to local or 
- * remote syslog.
- *
- * This effort performed by Michael Martinez mwtzzz@gmail.com
+ * 1999-02-22 Arkadiusz Mi¶kiewicz <misiek@pld.ORG.PL>
+ * - added Native Language Support
+ * Sun Mar 21 1999 - Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+ * - fixed strerr(errno) in gettext calls
  */
-
-/* tail: all original command-line options removed
- * except q, v, and s. tail -F is assumed.
- * stdin is not allowed. must specify a file
- * by name.
- */
-
-/* logger: an additional command line option 
- * --add which allows additional text to be 
- *  inserted at the beginning of the line before
- *  sent to the syslog server. 
- *  The previous hardcoded 400 character limit 
- *  for the log message has been increased to 8096.
- */
-
 
 #include <errno.h>
 #include <unistd.h>

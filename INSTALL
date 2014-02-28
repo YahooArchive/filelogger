@@ -1,0 +1,50 @@
+USING THE BINARY
+
+The "filelogger" binary in the parent directory is a 64-bit binary compiled on a Linux
+system. If you have a 64-bit system, chances are it will work. Simply copy it into your
+directory of choice and run it on the command line.
+
+COMPILING
+
+Util-linux
+----------
+grab yourself a copy of util-linux_2.20.1.orig.tar.gz
+put it in your home directory and unpack it
+cd ~/util-linux-2.20.1 && ./configure && make
+
+Core-utils
+----------
+Now you need some files - headers and binaries - from the coreutils
+package. Which files you specifically need are to be found in the
+filelogger package under the util-linux-2.20.1/include/ directory and 
+the util-linux-2.20.1/misc-utils/ directory. You will need everything
+in these two directories. There are two different ways you can obtain 
+these files, the simplest being #1:
+
+1. simply use the files provided in the filelogger package as described
+above
+
+2. compile them yourself from the coreutils-8.9.tar.gz package.
+Download this package, put it anywhere you want,
+unpack it, then cd into this directory and ./configure
+&& make
+
+Now place the files appropriately into your ~/util-linux-2.20.1/include/
+and ~/util-linux-2.20.1/misc-utils/ directories.
+
+* include/ contains some header files from coreutils 
+
+* misc-utils/ contains a modified Makefile, binary .o files from 
+	  coreutils, and logger.c (which is a copy of the latest stable 
+	  filelogger.c)
+
+Be sure to copy the Makefile and logger.c from the filelogger package into
+your ~/util-linux-2.20.1/misc-utils/ directory. The modified Makefile uses
+the extra .o files from coreutils.
+
+Now, cd ~/util-linux-2.20.1/misc-utils/ && make logger
+
+You'll see some compiler warnings which can be ignored. As long "make" exits
+without errors (as evidenced by echo $? ) you are okay. Rename the new "logger"
+binary to "filelogger" so you don't get confused with the default system logger.
+
